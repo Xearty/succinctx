@@ -1,13 +1,10 @@
-use std::marker::PhantomData;
-
-use plonky2::hash::poseidon::PoseidonHash;
+use itertools::Itertools;
+use plonky2::{hash::poseidon::PoseidonHash, iop::target::BoolTarget};
 use plonky2::iop::challenger::RecursiveChallenger;
-
-use super::generators::SubarrayEqualGenerator;
 use crate::prelude::{BoolVariable, ByteVariable, CircuitBuilder, PlonkParameters, Variable};
 
 // @TODO(xearty): put this elsewhere
-const MAX_ELEMENTS: u64 = 64;
+const MAX_ELEMENTS: usize = 64;
 
 impl<L: PlonkParameters<D>, const D: usize> CircuitBuilder<L, D> {
     fn commit_subarray(
@@ -18,21 +15,26 @@ impl<L: PlonkParameters<D>, const D: usize> CircuitBuilder<L, D> {
         random_variables: &[Variable; MAX_ELEMENTS]
     ) -> Variable {
         let one = self.one();
-        let end_idx = bulder.add(offset, len);
-        let mut is_within_subarray = BoolVariable(self.zero());
+        let end_idx = self.add(offset, len);
+        let mut is_within_subarray: Variable = self.zero(); // why type annotation is needed
         let mut commitment = self.zero();
 
-        let idx_target = self.zero();
+        let mut idx_target = self.zero();
         for idx in 0..MAX_ELEMENTS {
             // is_within_subarray is one if idx is in the range [offset..offset+len]
             let is_at_start_idx = self.is_equal(idx_target, offset);
-            is_within_subarray = self.add(is_within_subarray, at_start_idx);
+            is_within_subarray = self.add(is_within_subarray, is_at_start_idx.0);
             let is_at_end_idx = self.is_equal(idx_target, end_idx);
-            is_within_subarray = self.sub(is_within_subarray, is_at_end_idx);
+            is_within_subarray = self.sub(is_within_subarray, is_at_end_idx.0);
 
-            // if in range, include the byte, multiplied by a random value
-            let subarray_idx = self.mul(self.sub(idx_target, offset), is_within_subarray);
-            let random_value_if_in_range = self.mul(is_within_subarray, self.mul(a[idx], random_variables[idx]));
+            let arr_bits = self.to_le_bits(arr[idx])
+                .iter()
+                .map(|x| BoolTarget::new_unsafe(x.0.0))
+                .collect_vec();
+            let arr_var= Variable(self.api.le_sum(arr_bits.iter()));
+
+            let arrs_mul = self.mul(arr_var, random_variables[idx]);
+            let random_value_if_in_range = self.mul(is_within_subarray, arrs_mul);
             commitment = self.add(commitment, random_value_if_in_range);
 
             idx_target = self.add(idx_target, one);
@@ -53,10 +55,15 @@ impl<L: PlonkParameters<D>, const D: usize> CircuitBuilder<L, D> {
         let mut challenger = RecursiveChallenger::<L::Field, PoseidonHash, D>::new(&mut self.api);
         let challenger_seed = Vec::new();
         challenger.observe_elements(&challenger_seed);
-        let random_variables = challenger.get_n_challenges(&mut self.api, MAX_ELEMENTS);
+        let random_variables: [Variable; MAX_ELEMENTS] = challenger.get_n_challenges(&mut self.api, MAX_ELEMENTS)
+            .iter()
+            .map(|target| Variable(*target))
+            .collect_vec()
+            .try_into()
+            .unwrap();
 
-        let commitment_for_a = self.commit_subarray(a, a_offset, len, random_variables);
-        let commitment_for_b = self.commit_subarray(b, b_offset, len, random_variables);
+        let commitment_for_a = self.commit_subarray(a, a_offset, len, &random_variables);
+        let commitment_for_b = self.commit_subarray(b, b_offset, len, &random_variables);
         self.is_equal(commitment_for_a, commitment_for_b)
     }
 
@@ -69,7 +76,8 @@ impl<L: PlonkParameters<D>, const D: usize> CircuitBuilder<L, D> {
         b_offset: Variable,
         len: Variable,
     ) {
-        self.api.assert_bool(subarray_equal(&a, a_offset, &b, b_offset, len));
+        let temp = BoolTarget::new_unsafe(self.subarray_equal(a, a_offset, b, b_offset, len).0.0);
+        self.api.assert_bool(temp);
     }
 }
 
