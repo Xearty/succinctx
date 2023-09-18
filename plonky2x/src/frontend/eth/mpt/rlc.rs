@@ -14,7 +14,7 @@ impl<L: PlonkParameters<D>, const D: usize> CircuitBuilder<L, D> {
     ) -> Variable {
         let one = self.one();
         let end_idx = self.add(offset, len);
-        let mut is_within_subarray: Variable = self.zero(); // why type annotation is needed
+        let mut is_within_subarray: Variable = self.zero();
         let mut commitment = self.zero();
 
         let mut idx_target = self.zero();
