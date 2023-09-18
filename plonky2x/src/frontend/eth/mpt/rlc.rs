@@ -92,25 +92,25 @@ pub(crate) mod tests {
         let mut builder = DefaultBuilder::new();
 
         let byte1 = ByteVariable([
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
         ]);
 
         let byte2 = ByteVariable([
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(2))), // this bit is different
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ZERO)),// this bit is different
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
         ]);
 
         let byte3 = byte1;
@@ -138,25 +138,25 @@ pub(crate) mod tests {
         let mut builder = DefaultBuilder::new();
 
         let byte1 = ByteVariable([
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
         ]);
 
         let byte2 = ByteVariable([
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(2))), // this bit is different
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
-            BoolVariable(builder.constant(F::from_canonical_u8(1))),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ZERO)),// this bit is different
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
+            BoolVariable(builder.constant(F::ONE)),
         ]);
 
         let byte3 = byte1;
